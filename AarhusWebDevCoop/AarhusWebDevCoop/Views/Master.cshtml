@@ -1,0 +1,36 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoTemplatePage
+@using ContentModels = Umbraco.Web.PublishedContentModels;
+@{
+    Layout = null;
+}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+           <a class="navbar-brand" href="#">@Umbraco.Field("siteTitle", recursive: true)</a>
+        </div>
+        @Umbraco.RenderMacro("mainMenu")
+    </div>
+    </nav>
+    <body style="background-color: powderblue;">
+        @RenderBody()
+
+<div id="footer-container">
+    <footer class="wrapper">
+        <h3>@Umbraco.Field("footer", recursive: true)</h3>
+    </footer>
+</div>
+
+<script src="~/Scripts/jquery-3.3.1.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+        </body>
+        </html>

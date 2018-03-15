@@ -1,0 +1,93 @@
+﻿@inherits Umbraco.Web.Macros.PartialViewMacroPage
+@using Umbraco.Web
+
+@*
+    This snippet displays a list of links of the pages immediately under the top-most page in the content tree.
+    This is the home page for a standard website.
+    It also highlights the current active page/section in the navigation with the CSS class "current".
+*@
+
+@{ var root = Model.Content.Site(); }
+@{ var selection = root.Children("projectsOverview").Where(x => x.IsVisible()).ToArray();
+
+    IEnumerable<IPublishedContent> items = Umbraco.TypedContentAtRoot()
+        .First() //Root document
+        .Children() //Level 2 documents
+        .Where(x => x.DocumentTypeAlias == "projectsOverview")
+        .First() //Projects overview document
+        .Children() //Projects documents
+        .Where(x => x.HasValue("projectStatus") &&
+        Umbraco.GetPreValueAsString(
+            x.GetPropertyValue<int>("projectStatus")) == "Completed")
+        .Where(x => x.IsVisible()) // Only visible documents
+        .Where(x => x.HasValue("umbracoNaviHide") &&
+        Umbraco.GetPreValueAsString(
+            x.GetPropertyValue<int>("umbracoNaviHide")) == "false")
+        .Where(x => x.IsVisible())
+        .OrderByDescending(x => x.CreateDate); //Newest projects first
+
+
+}
+
+
+
+        @if (selection.Length > 0)
+    {
+        foreach (var menuItem in selection)
+        {
+            if (menuItem.Children().Where(x => x.IsVisible()).Count() > 0)
+            {
+
+                <li class="dropdown">
+                    <a class="dropdown-toggle  nav-link @((Model.Content.Name == menuItem.Name) ? "active" : null)" data-toggle="dropdown" role="button" href="@menuItem.Url">@menuItem.Name <b class="caret"></b></a>
+                    <ul class="dropdown-menu navbar-link">
+                        @foreach (IPublishedContent subMenuItem in menuItem.Children)
+                        {
+                            if (subMenuItem.DocumentTypeAlias == "projectItem")
+                            {
+
+                                if (umbraco.library.
+                                    GetPreValueAsString(subMenuItem
+                                    .GetPropertyValue<int>("projectStatus")) == "Completed"
+                                    )
+                                {
+                                    if (subMenuItem.GetPropertyValue<int>("umbracoNaviHide") == 0)
+                                    { 
+
+                                        <li class="nav-item">
+                                            <a class="dropdown-item" href="@subMenuItem.Url">@subMenuItem.Name</a>
+                                        </li>
+                                    }
+
+                                }
+
+                            }
+                            else
+                            {
+
+                                if (subMenuItem.GetPropertyValue<int>("umbracoNaviHide") == 0)
+                                {
+
+                                    <li class="nav-item">
+                                        <a class="dropdown-item" href="@subMenuItem.Url">@subMenuItem.Name</a>
+                                    </li>
+                                }
+                            }
+
+
+
+                        }
+                    </ul>
+                </li>
+            } else {
+                <li class="nav-item @((Model.Content.Name == menuItem.Name) ? "active" : null)">
+                    <a class="nav-link" href="@menuItem.Url">@menuItem.Name</a>
+                </li>
+            }
+
+        }
+    }
+</ul>
+
+
+
